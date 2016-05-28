@@ -42,36 +42,43 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             };
 
             var canvas = d3.select(element[0]).append("svg")
-                .attr("width", 500)
-                .attr("height", 500);
+                .attr("width", '100%')
+                .attr("height", '100%')
+                .append("g");
 
             var tree = d3.layout.tree()
                 .size([500, 500]);
 
+            var diagonal = d3.svg.diagonal()
+                .projection(function(d) { return [d.y, d.x]; });
+
             var nodes = tree.nodes(treeData);
             var links = tree.links(nodes);
 
-            debugger;
-
-            canvas.selectAll(".link")
-                .data(links)
-                .enter()
-                .append('line')
-                .attr('class', 'link')
-                .attr('x1', function(d){return d.source.x})
-                .attr('y1', function(d){return d.source.y})
-                .attr('x2', function(d){return d.target.x})
-                .attr('y2', function(d){return d.target.y})
-                .attr('stroke', 'black');
-
-            canvas.selectAll(".node")
+            var node = canvas.selectAll("g.node")
                 .data(nodes)
                 .enter()
-                .append('text')
-                .attr('class', 'node')
-                .attr('x', function(d){return d.x})
-                .attr('y', function(d){return d.y})
-                .text(function(d){ return d.name;});
+                .append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                });
+
+            node.append("circle")
+                .attr("r", 4.5);
+
+            node.append("text")
+                .attr("dx", 8)
+                .attr("dy", 3)
+                .attr("text-anchor", "start")
+                .text(function(d) { return d.name; });
+
+            var link = canvas.selectAll("path.link")
+                .data(links)
+                .enter()
+                .insert("path", "g")
+                .attr("class", "link")
+                .attr("d", diagonal);
         }
     }
 });

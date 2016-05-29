@@ -1,49 +1,17 @@
 angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
     return {
         restrict: "E",
-        templateUrl: "team-navigator/team-navigator.html",
+        scope: {
+            teamData: "="
+        },
+        //templateUrl: "team-navigator/team-navigator.html",
         link: function(scope, element, attrs) {
 
-            // Test Data
-            var treeData =
-            {
-                "name": "Top Level",
-                "parent": "null",
-                "children": [
-                    {
-                        "name": "Level 2 A",
-                        "parent": "Top Level",
-                        "children": [
-                            {
-                                "name": "Level 3 A",
-                                "parent": "Level 2 A",
-                            },
-                            {
-                                "name": "Level 3 B",
-                                "parent": "Level 2 A",
-                            }
-                        ]
-                    },
-                    {
-                        "name": "Level 2 B",
-                        "parent": "Top Level",
-                        "children": [
-                            {
-                                "name": "Level 3 C",
-                                "parent": "Level 2 B"
-                            },
-                            {
-                                "name": "Level 3 D",
-                                "parent": "Level 2 B"
-                            }
-                        ]
-                    }
-                ]
-            };
+            console.log(scope.teamData);
 
             var canvas = d3.select(element[0]).append("svg")
-                .attr("width", '100%')
-                .attr("height", '100%')
+                .attr("width", "100%")
+                .attr("height", "100%")
                 .append("g")
                 .attr("transform", function(d) {
                     return "translate(0, 100)";

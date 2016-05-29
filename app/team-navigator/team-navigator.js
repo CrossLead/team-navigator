@@ -6,7 +6,34 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
         },
         link: function(scope, element, attrs) {
 
-            function 
+            var rootNode = null;
+            var teamsById = {};
+            var teamsByParentId = {};
+
+            loadTeamData();
+            debugger;
+
+            // Load team hierarchy data (received in raw format as scope.teamData)
+            // into dictionaries (teamsById and teamsByParentId) from which to
+            // build D3 trees for each selected team
+            function loadTeamData() {
+                scope.teamData.forEach(function(team) {
+                    teamsById[team.id] = team;
+
+                    if (!team.parentId) {
+                        // Expect only one root node with no parentId
+                        rootNode = team;
+                    } else {
+                        if (!teamsByParentId[team.parentId]) {
+                            teamsByParentId[team.parentId] = [ team ];
+                        } else {
+                            teamsByParentId[team.parentId].push(team);
+                        }
+                    }
+                });
+            }
+
+            // function getTreeNodeData(selectedId)
 
             var canvas = d3.select(element[0]).append("svg")
                 .attr("width", "100%")

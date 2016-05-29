@@ -10,6 +10,10 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             // Constants
             var NODE_TRANSITION_DURATION = 500;
             var LINK_TRANSITION_DURATION = 700;
+            var CANVAS_WIDTH = 1200;
+            var CANVAS_HEIGHT = 700;
+            var NODE_RADIUS = 70;
+            var NODE_PADDING = 20;
 
             // Team Data
             var teamsById = {};
@@ -17,16 +21,17 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
             // D3 Elements
             var canvas = d3.select(element[0]).append("svg")
-                .attr("width", "100%")
-                .attr("height", "100%")
+                .attr("width", CANVAS_WIDTH)
+                .attr("height", CANVAS_HEIGHT)
+                .attr("id", "canvas")
                 .append("g")
                 .attr("transform", function(d) {
-                    return "translate(0, 100)";
+                    return "translate(0," + (NODE_RADIUS * 2) + ")";
                 });
 
             var tree = d3.layout.tree()
-                .separation(function(a, b) { return 70; })
-                .size([1000, 500]);
+                .separation(function(a, b) { return NODE_RADIUS + NODE_PADDING; })
+                .size([CANVAS_WIDTH - (NODE_RADIUS * 4), CANVAS_HEIGHT - (NODE_RADIUS * 4)]);
 
             var diagonal = d3.svg.diagonal()
                 .projection(function(d) { return [d.x, d.y]; });
@@ -116,15 +121,15 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeEnter.append("image")
                     .attr("xlink:href", function(node) { return node.icon; })
-                    .attr("x", "-20px")
-                    .attr("y", "-30px")
-                    .attr("width", "40px")
-                    .attr("height", "40px")
+                    .attr("x", "-" + (NODE_RADIUS * 0.4) + "px")
+                    .attr("y", "-" + (NODE_RADIUS - NODE_PADDING) + "px")
+                    .attr("width", (NODE_RADIUS * 0.8) + "px")
+                    .attr("height", (NODE_RADIUS + 0.8) + "px")
                     .attr("opacity", 1e-6);
 
                 nodeEnter.append("text")
                     .attr("dx", 0)
-                    .attr("dy", 30)
+                    .attr("dy", NODE_RADIUS/2)
                     .attr("text-anchor", "middle")
                     .attr("font-size", "12px")
                     .attr("fill", "black")
@@ -139,7 +144,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     });
 
                 nodeUpdate.select("circle")
-                    .attr("r", 60);
+                    .attr("r", NODE_RADIUS);
 
                 nodeUpdate.select("text")
                     .style("fill-opacity", 1);

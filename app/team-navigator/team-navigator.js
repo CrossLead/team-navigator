@@ -6,8 +6,10 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
         },
         link: function(scope, element, attrs) {
 
+            // Constants
+            var TRANSITION_DURATION = 750;
+
             // Team Data
-            var rootNode = null;
             var teamsById = {};
             var teamsByParentId = {};
 
@@ -29,7 +31,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
             // Initialization
             loadTeamData();
-            updateTree(2);
+            updateTree(1);
 
             // Load team hierarchy data (received in raw format as scope.teamData)
             // into dictionaries (teamsById and teamsByParentId) from which to
@@ -38,10 +40,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 scope.teamData.forEach(function(team) {
                     teamsById[team.id] = team;
 
-                    if (!team.parentId) {
-                        // Expect only one root node with no parentId
-                        rootNode = team;
-                    } else {
+                    if (team.parentId) {
                         if (!teamsByParentId[team.parentId]) {
                             teamsByParentId[team.parentId] = [ team ];
                         } else {
@@ -62,6 +61,8 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 if (!selectedTeam.parentId) {
                     treeData = {
                         "name": selectedTeam.name,
+                        "id": selectedTeam.id,
+                        "parentId": null,
                         "children": childTeams
                     }
                 }
@@ -70,8 +71,12 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     var parentTeam = teamsById[selectedTeam.parentId];
                     treeData = {
                         "name": parentTeam.name,
+                        "id": parentTeam.id,
+                        "parentId": parentTeam.parentId,
                         "children": [{
                             "name": selectedTeam.name,
+                            "id": selectedTeam.id,
+                            "parentId": selectedTeam.parentId,
                             "children": childTeams
                         }]
                     };
@@ -85,30 +90,84 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 var links = tree.links(nodes);
 
                 var node = canvas.selectAll("g.node")
-                    .data(nodes)
+                    .data(nodes, function(data) {
+                        return data.id;
+                    });
+
+                var nodeEnter = node
                     .enter()
                     .append("g")
                     .attr("class", "node")
                     .attr("transform", function(d) {
                         return "translate(" + d.x + "," + d.y + ")";
-                    });
+                    })
+                    .on("click", nodeClicked);
 
-                node.append("circle")
-                    .attr("r", 50)
-                    .attr("fill", "steelblue");
+                nodeEnter.append("circle")
+                    .attr("r", 1e-6)
+                    .attr("fill", "lightsteelblue");
 
-                node.append("text")
+                nodeEnter.append("text")
                     // .attr("dx", 0)
                     // .attr("dy", 0)
                     .attr("text-anchor", "middle")
-                    .text(function(d) { return d.name; });
+                    .text(function(d) { return d.name; })
+                    .style("fill-opacity", 1e-6);
 
+                // Transition entering nodes
+                var nodeUpdate = node.transition()
+                    .duration(TRANSITION_DURATION)
+                    .attr("transform", function(node) {
+                        return "translate(" + node.x + "," + node.y + ")";
+                    });
+
+                nodeUpdate.select("circle")
+                    .attr("r", 60);
+
+                nodeUpdate.select("text")
+                    .style("fill-opacity", 1);
+
+                // Transition exiting nodes
+                var nodeExit = node.exit().transition()
+                    .duration(TRANSITION_DURATION)
+                    .attr("transform", function(node) {
+                        return "translate(250,250)";
+                    })
+                    .remove();
+
+                nodeExit.select("circle")
+                    .attr("r", 1e-6);
+
+                nodeExit.select("text")
+                    .style("fill-opacity", 1e-6);
+
+                // Update links
                 var link = canvas.selectAll("path.link")
-                    .data(links)
-                    .enter()
+                    .data(links, function(link) {
+                        return link.target.id;
+                    });
+
+                // Transition new links
+                link.enter()
                     .insert("path", "g")
                     .attr("class", "link")
                     .attr("d", diagonal);
+
+                link.transition()
+                    .duration(TRANSITION_DURATION)
+                    .attr("d", diagonal);
+
+                link.exit()
+                    .transition()
+                    .duration(TRANSITION_DURATION)
+                    .attr("d", diagonal)
+                    .remove();
+            }
+
+            function nodeClicked(node) {
+                console.log("nodeClicked");
+                console.log(node);
+                updateTree(node.id);
             }
         }
     }

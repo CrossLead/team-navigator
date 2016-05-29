@@ -4,10 +4,9 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
         scope: {
             teamData: "="
         },
-        //templateUrl: "team-navigator/team-navigator.html",
         link: function(scope, element, attrs) {
 
-            console.log(scope.teamData);
+            function 
 
             var canvas = d3.select(element[0]).append("svg")
                 .attr("width", "100%")

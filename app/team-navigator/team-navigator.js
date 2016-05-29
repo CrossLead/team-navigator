@@ -2,7 +2,8 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
     return {
         restrict: "E",
         scope: {
-            teamData: "="
+            teamData: "=",
+            selectedTeamId: "="
         },
         link: function(scope, element, attrs) {
 
@@ -25,14 +26,14 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
             var tree = d3.layout.tree()
                 .separation(function(a, b) { return 70; })
-                .size([500, 500]);
+                .size([1000, 500]);
 
             var diagonal = d3.svg.diagonal()
                 .projection(function(d) { return [d.x, d.y]; });
 
             // Initialization
             loadTeamData();
-            updateTree(1);
+            updateTree(parseInt(scope.selectedTeamId));
 
             // Load team hierarchy data (received in raw format as scope.teamData)
             // into dictionaries (teamsById and teamsByParentId) from which to
@@ -62,6 +63,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 if (!selectedTeam.parentId) {
                     treeData = {
                         "name": selectedTeam.name,
+                        "icon": selectedTeam.icon,
                         "id": selectedTeam.id,
                         "parentId": null,
                         "children": childTeams
@@ -72,10 +74,12 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     var parentTeam = teamsById[selectedTeam.parentId];
                     treeData = {
                         "name": parentTeam.name,
+                        "icon": parentTeam.icon,
                         "id": parentTeam.id,
                         "parentId": parentTeam.parentId,
                         "children": [{
                             "name": selectedTeam.name,
+                            "icon": selectedTeam.icon,
                             "id": selectedTeam.id,
                             "parentId": selectedTeam.parentId,
                             "children": childTeams
@@ -106,12 +110,24 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeEnter.append("circle")
                     .attr("r", 1e-6)
-                    .attr("fill", "lightsteelblue");
+                    .attr("fill", "plum")
+                    .attr("stroke", "slategrey")
+                    .attr("stroke-width", "2px");
+
+                nodeEnter.append("image")
+                    .attr("xlink:href", function(node) { return node.icon; })
+                    .attr("x", "-20px")
+                    .attr("y", "-30px")
+                    .attr("width", "40px")
+                    .attr("height", "40px")
+                    .attr("opacity", 1e-6);
 
                 nodeEnter.append("text")
-                    // .attr("dx", 0)
-                    // .attr("dy", 0)
+                    .attr("dx", 0)
+                    .attr("dy", 30)
                     .attr("text-anchor", "middle")
+                    .attr("font-size", "12px")
+                    .attr("fill", "black")
                     .text(function(d) { return d.name; })
                     .style("fill-opacity", 1e-6);
 
@@ -128,6 +144,9 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 nodeUpdate.select("text")
                     .style("fill-opacity", 1);
 
+                nodeUpdate.select("image")
+                    .attr("opacity", 1);
+
                 // Transition exiting nodes
                 var nodeExit = node.exit().transition()
                     .duration(NODE_TRANSITION_DURATION)
@@ -138,6 +157,9 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeExit.select("text")
                     .style("fill-opacity", 1e-6);
+
+                nodeExit.select("image")
+                    .attr("opacity", 1e-6);
 
                 // Update links
                 var link = canvas.selectAll("path.link")
@@ -166,6 +188,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             }
 
             function nodeClicked(node) {
+                scope.selectedTeamId = node.id;
                 updateTree(node.id);
             }
         }

@@ -7,7 +7,8 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
         link: function(scope, element, attrs) {
 
             // Constants
-            var TRANSITION_DURATION = 750;
+            var NODE_TRANSITION_DURATION = 500;
+            var LINK_TRANSITION_DURATION = 700;
 
             // Team Data
             var teamsById = {};
@@ -116,7 +117,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 // Transition entering nodes
                 var nodeUpdate = node.transition()
-                    .duration(TRANSITION_DURATION)
+                    .duration(NODE_TRANSITION_DURATION)
                     .attr("transform", function(node) {
                         return "translate(" + node.x + "," + node.y + ")";
                     });
@@ -129,10 +130,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 // Transition exiting nodes
                 var nodeExit = node.exit().transition()
-                    .duration(TRANSITION_DURATION)
-                    .attr("transform", function(node) {
-                        return "translate(250,250)";
-                    })
+                    .duration(NODE_TRANSITION_DURATION)
                     .remove();
 
                 nodeExit.select("circle")
@@ -151,22 +149,23 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 link.enter()
                     .insert("path", "g")
                     .attr("class", "link")
-                    .attr("d", diagonal);
+                    .attr("d", diagonal)
+                    .attr("stroke-opacity", 1e-6);
 
                 link.transition()
-                    .duration(TRANSITION_DURATION)
-                    .attr("d", diagonal);
+                    .duration(LINK_TRANSITION_DURATION)
+                    .attr("d", diagonal)
+                    .attr("stroke-opacity", 1);
 
                 link.exit()
                     .transition()
-                    .duration(TRANSITION_DURATION)
+                    .duration(LINK_TRANSITION_DURATION)
                     .attr("d", diagonal)
+                    .attr("stroke-opacity", 1e-6)
                     .remove();
             }
 
             function nodeClicked(node) {
-                console.log("nodeClicked");
-                console.log(node);
                 updateTree(node.id);
             }
         }

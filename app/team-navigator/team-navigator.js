@@ -109,8 +109,51 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             function rerenderTree(treeData) {
                 var nodes = tree.nodes(treeData);
                 var links = tree.links(nodes);
+                
+                // Update links
+                var link = canvas
+                    .selectAll(".link")
+                    .data(links, function(link) {
+                        return link.target.id;
+                    });
 
-                var node = canvas.selectAll("g.node")
+                // Transition new links
+                link.enter()
+                    .append("line")
+                    .attr("class", "link")
+                    .attr("opacity", 0);
+
+                link.transition()
+                    .duration(LINK_TRANSITION_DURATION)
+                    .attr("opacity", 1)
+                    .attr("transform", function(link) {
+                        
+                        var translateY = link.target.depth == 1
+                            ? NODE_RADIUS
+                            : NODE_RADIUS * 3;
+
+                        var scaleY = (link.target.y - link.source.y - (NODE_RADIUS * 2)) /
+                            (link.target.y - link.source.y);
+
+                        // Scale to account for node radius
+                        return "translate(0," + translateY + ")"
+                            + " scale(1," + scaleY + ")";
+                    })
+                    .attr("x1", function(link) { return link.source.x; })
+                    .attr("y1", function(link) { return link.source.y; })
+                    .attr("x2", function(link) { return link.target.x; })
+                    .attr("y2", function(link) { return link.target.y; })
+                    .attr("marker-end", "url(#end)");
+
+                link.exit()
+                    .transition()
+                    .duration(LINK_TRANSITION_DURATION)
+                    .attr("opacity", 0)
+                    .attr("marker-end", null)
+                    .remove();
+
+                var node = canvas
+                    .selectAll("g.node")
                     .data(nodes, function(data) {
                         return data.id;
                     });
@@ -176,48 +219,6 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeExit.select("image")
                     .attr("opacity", 1e-6);
-
-                // Update links
-                var link = canvas.selectAll(".link")
-                    .data(links, function(link) {
-                        return link.target.id;
-                    });
-
-                // Transition new links
-                link.enter()
-                    .append("line")
-                    .attr("class", "link")
-                    .attr("opacity", 0);
-
-                link.transition()
-                    .duration(LINK_TRANSITION_DURATION)
-                    .attr("opacity", 1)
-                    .attr("transform", function(link) {
-                        
-                        var translateY = link.target.depth == 1
-                            ? NODE_RADIUS
-                            : NODE_RADIUS * 3;
-
-                        var scaleY = (link.target.y - link.source.y - (NODE_RADIUS * 2)) /
-                            (link.target.y - link.source.y);
-
-                        // Scale to account for node radius
-                        return "translate(0," + translateY + ")"
-                            + " scale(1," + scaleY + ")";
-                    })
-                    .attr("x1", function(link) { return link.source.x; })
-                    .attr("y1", function(link) { return link.source.y; })
-                    .attr("x2", function(link) { return link.target.x; })
-                    .attr("y2", function(link) { return link.target.y; })
-                    .attr("marker-end", "url(#end)");
-
-                link.exit()
-                    .transition()
-                    .duration(LINK_TRANSITION_DURATION)
-                    .attr("opacity", 0)
-                    .attr("transform", null)
-                    .attr("marker-end", null)
-                    .remove();
             }
 
             function nodeClicked(node) {

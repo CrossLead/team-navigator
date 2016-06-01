@@ -2,6 +2,15 @@
     cursor: pointer;
 }
 
+.node-label {
+    paint-order: stroke;
+    stroke: white;
+    stroke-width: 1px;
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    font-weight: 800;
+}
+
 .link {
     fill: none;
     stroke: slategrey;

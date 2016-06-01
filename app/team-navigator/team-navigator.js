@@ -13,7 +13,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             var CANVAS_WIDTH = 1200;
             var CANVAS_HEIGHT = 800;
             var NODE_RADIUS = 60;
-            var NODE_PADDING = 12;
+            var NODE_PADDING = 20;
 
             // Team Data
             var teamsById = {};
@@ -182,8 +182,9 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     .attr("opacity", 1e-6);
 
                 nodeEnter.append("text")
+                    .attr("class", "node-label")
                     .attr("dx", 0)
-                    .attr("dy", NODE_RADIUS/2)
+                    .attr("dy", NODE_RADIUS + NODE_PADDING)
                     .attr("text-anchor", "middle")
                     .attr("font-size", "12px")
                     .attr("fill", "black")

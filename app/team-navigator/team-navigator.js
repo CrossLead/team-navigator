@@ -47,9 +47,6 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 .separation(function(a, b) { return NODE_RADIUS + NODE_PADDING; })
                 .size([CANVAS_WIDTH - (NODE_RADIUS * 4), CANVAS_HEIGHT - (NODE_RADIUS * 4)]);
 
-            var diagonal = d3.svg.diagonal()
-                .projection(function(d) { return [d.x, d.y]; });
-
             // Initialization
             loadTeamData();
             updateTree(parseInt(scope.selectedTeamId));
@@ -181,41 +178,43 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     .attr("opacity", 1e-6);
 
                 // Update links
-                var link = canvas.selectAll("path.link")
+                var link = canvas.selectAll(".link")
                     .data(links, function(link) {
                         return link.target.id;
                     });
 
                 // Transition new links
                 link.enter()
-                    .insert("path", "g")
+                    .append("line")
                     .attr("class", "link")
-                    .attr("d", diagonal)
-                    .attr("stroke-opacity", 1e-6);
+                    .attr("opacity", 0);
 
                 link.transition()
                     .duration(LINK_TRANSITION_DURATION)
-                    .attr("d", diagonal)
-                    .attr("stroke-opacity", 1)
-                    .attr("transform", function(node) {
-                        var translateY = node.target.depth == 1
+                    .attr("opacity", 1)
+                    .attr("transform", function(link) {
+                        
+                        var translateY = link.target.depth == 1
                             ? NODE_RADIUS
                             : NODE_RADIUS * 3;
 
-                        var scaleY = (node.target.y - node.source.y - (NODE_RADIUS * 2)) /
-                            (node.target.y - node.source.y);
+                        var scaleY = (link.target.y - link.source.y - (NODE_RADIUS * 2)) /
+                            (link.target.y - link.source.y);
 
                         // Scale to account for node radius
                         return "translate(0," + translateY + ")"
                             + " scale(1," + scaleY + ")";
                     })
+                    .attr("x1", function(link) { return link.source.x; })
+                    .attr("y1", function(link) { return link.source.y; })
+                    .attr("x2", function(link) { return link.target.x; })
+                    .attr("y2", function(link) { return link.target.y; })
                     .attr("marker-end", "url(#end)");
 
                 link.exit()
                     .transition()
                     .duration(LINK_TRANSITION_DURATION)
-                    .attr("d", diagonal)
-                    .attr("stroke-opacity", 1e-6)
+                    .attr("opacity", 0)
                     .attr("transform", null)
                     .attr("marker-end", null)
                     .remove();

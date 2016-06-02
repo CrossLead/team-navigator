@@ -44,6 +44,13 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 .attr("cx", 0)
                 .attr("cy", 0)
                 .attr("r", NODE_RADIUS);
+                
+            canvas.append("clipPath")
+                .attr("id", "selected-node-clip")
+                .append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", SELECTED_NODE_RADIUS);
 
             canvas.append("svg:defs").selectAll("marker")
                 .data(["end", "long-end"])
@@ -201,9 +208,8 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     .attr("y", "-" + NODE_RADIUS + "px")
                     .attr("width", (NODE_RADIUS * 2) + "px")
                     .attr("height", (NODE_RADIUS * 2) + "px")
-                    .attr("opacity", 1e-6)
-                    .attr("clip-path", "url(#node-clip)");
-
+                    .attr("opacity", 1e-6);
+                    
                 nodeEnter.append("text")
                     .attr("class", "node-label")
                     .attr("text-anchor", "middle")
@@ -238,7 +244,17 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     });
 
                 nodeUpdate.select("image")
-                    .attr("opacity", 1);
+                    .attr("opacity", 1)
+                    .attr("clip-path", function(node) {
+                        console.log("node", node.id);
+                        console.log("selected", scope.selectedTeamId);
+                        if (node.id == scope.selectedTeamId) {
+                            console.log("selected clip");
+                            return "url(#selected-node-clip)";
+                        }
+                        console.log("clip");
+                        return "url(#node-clip)";
+                    });
 
                 // Transition exiting nodes
                 var nodeExit = node.exit().transition()

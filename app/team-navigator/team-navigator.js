@@ -140,8 +140,14 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                         var translateY = link.target.depth == 1
                             ? NODE_RADIUS
                             : NODE_RADIUS * 3;
+                            
+                        if (link.source.id == scope.selectedTeamId) {
+                            translateY = link.target.depth == 1
+                                ? SELECTED_NODE_RADIUS
+                                : SELECTED_NODE_RADIUS * 2 + NODE_RADIUS
+                        }
 
-                        var scaleY = (link.target.y - link.source.y - (NODE_RADIUS * 2)) /
+                        var scaleY = (link.target.y - link.source.y - (NODE_RADIUS + SELECTED_NODE_RADIUS)) /
                             (link.target.y - link.source.y);
 
                         // Scale to account for node radius
@@ -213,7 +219,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                         return NODE_RADIUS;
                     });
 
-                nodeUpdate.select("text")
+                nodeUpdate.select(".node-label")
                     .style("fill-opacity", 1)
                     .attr("dx", 0)
                     .attr("dy", function(node) {

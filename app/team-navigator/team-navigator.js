@@ -211,7 +211,20 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     .attr("text-anchor", "middle")
                     .attr("font-size", "12px")
                     .attr("fill", "black")
-                    .text(function(d) { return d.name; })
+                    .text(function(node) { return node.name; })
+                    .style("fill-opacity", 1e-6);
+                    
+                nodeEnter.append("text")
+                    .attr("class", "child-count")
+                    .attr("text-anchor", "middle")
+                    .attr("font-size", "12px")
+                    .attr("fill", "black")
+                    .text(function(node) {
+                        var count = teamsByParentId[node.id] 
+                            ? teamsByParentId[node.id].length
+                            : 0;
+                        return "(" + count + ")"; 
+                    })
                     .style("fill-opacity", 1e-6);
 
                 // Transition entering nodes
@@ -237,6 +250,16 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                             return SELECTED_NODE_RADIUS + NODE_PADDING;
                         }
                         return NODE_RADIUS + NODE_PADDING;
+                    });
+                    
+                nodeUpdate.select(".child-count")
+                    .style("fill-opacity", 1)
+                    .attr("dx", 0)
+                    .attr("dy", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return SELECTED_NODE_RADIUS + (NODE_PADDING * 2);
+                        }
+                        return (NODE_RADIUS + NODE_PADDING * 2);
                     });
 
                 nodeUpdate.select("image")

@@ -204,10 +204,6 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeEnter.append("image")
                     .attr("xlink:href", function(node) { return node.icon; })
-                    .attr("x", "-" + NODE_RADIUS  + "px")
-                    .attr("y", "-" + NODE_RADIUS + "px")
-                    .attr("width", (NODE_RADIUS * 2) + "px")
-                    .attr("height", (NODE_RADIUS * 2) + "px")
                     .attr("opacity", 1e-6);
                     
                 nodeEnter.append("text")
@@ -246,14 +242,34 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 nodeUpdate.select("image")
                     .attr("opacity", 1)
                     .attr("clip-path", function(node) {
-                        console.log("node", node.id);
-                        console.log("selected", scope.selectedTeamId);
                         if (node.id == scope.selectedTeamId) {
-                            console.log("selected clip");
                             return "url(#selected-node-clip)";
                         }
-                        console.log("clip");
                         return "url(#node-clip)";
+                    })
+                    .attr("x", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return "-" + SELECTED_NODE_RADIUS  + "px";
+                        }
+                        return "-" + NODE_RADIUS  + "px";
+                    })
+                    .attr("y", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return "-" + SELECTED_NODE_RADIUS  + "px";
+                        }
+                        return "-" + NODE_RADIUS  + "px";
+                    })
+                    .attr("width", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return (SELECTED_NODE_RADIUS * 2) + "px";
+                        }
+                        return (NODE_RADIUS * 2) + "px";
+                    })
+                    .attr("height", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return (SELECTED_NODE_RADIUS * 2) + "px";
+                        }
+                        return (NODE_RADIUS * 2) + "px";
                     });
 
                 // Transition exiting nodes

@@ -67,21 +67,15 @@ app.controller("teamNavigatorDemoController", function($scope) {
             "parentId": 1
         },
         {
-            "name": "Engineering Team A",
-            "icon": "img/engineering.png",
+            "name": "Platform",
+            "icon": "img/platform.png",
             "id": 11,
             "parentId": 10
         },
         {
-            "name": "Engineering Team B",
-            "icon": "img/engineering.png",
+            "name": "Individual Task Management",
+            "icon": "img/taskmanagement.png",
             "id": 12,
-            "parentId": 10
-        },
-        {
-            "name": "Engineering Team C",
-            "icon": "img/engineering.png",
-            "id": 13,
             "parentId": 10
         },
         {

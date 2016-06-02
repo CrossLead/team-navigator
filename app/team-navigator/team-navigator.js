@@ -10,10 +10,10 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             // Constants
             var NODE_TRANSITION_DURATION = 500;
             var LINK_TRANSITION_DURATION = 700;
-            var CANVAS_WIDTH = 1200;
-            var CANVAS_HEIGHT = 800;
-            var NODE_RADIUS = 60;
-            var SELECTED_NODE_RADIUS = 80;
+            var CANVAS_WIDTH = 1000;
+            var CANVAS_HEIGHT = 600;
+            var NODE_RADIUS = 40;
+            var SELECTED_NODE_RADIUS = 60;
             var NODE_PADDING = 20;
 
             // Team Data
@@ -37,6 +37,13 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 .attr("transform", function(d) {
                     return "translate(0," + (SELECTED_NODE_RADIUS + NODE_PADDING) + ")";
                 });
+                
+            canvas.append("clipPath")
+                .attr("id", "node-clip")
+                .append("circle")
+                .attr("cx", 0)
+                .attr("cy", 0)
+                .attr("r", NODE_RADIUS);
 
             canvas.append("svg:defs").selectAll("marker")
                 .data(["end", "long-end"])
@@ -190,11 +197,12 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeEnter.append("image")
                     .attr("xlink:href", function(node) { return node.icon; })
-                    .attr("x", "-" + (NODE_RADIUS * 0.4) + "px")
-                    .attr("y", "-" + (NODE_RADIUS - NODE_PADDING) + "px")
-                    .attr("width", (NODE_RADIUS * 0.8) + "px")
-                    .attr("height", (NODE_RADIUS + 0.8) + "px")
-                    .attr("opacity", 1e-6);
+                    .attr("x", "-" + NODE_RADIUS  + "px")
+                    .attr("y", "-" + NODE_RADIUS + "px")
+                    .attr("width", (NODE_RADIUS * 2) + "px")
+                    .attr("height", (NODE_RADIUS * 2) + "px")
+                    .attr("opacity", 1e-6)
+                    .attr("clip-path", "url(#node-clip)");
 
                 nodeEnter.append("text")
                     .attr("class", "node-label")

@@ -13,6 +13,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             var CANVAS_WIDTH = 1200;
             var CANVAS_HEIGHT = 800;
             var NODE_RADIUS = 60;
+            var SELECTED_NODE_RADIUS = 80;
             var NODE_PADDING = 20;
 
             // Team Data
@@ -28,13 +29,13 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             canvas.append("g")
                 .attr("id", "links")
                 .attr("transform", function(d) {
-                    return "translate(0," + (NODE_RADIUS + NODE_PADDING) + ")";
+                    return "translate(0," + (SELECTED_NODE_RADIUS + NODE_PADDING) + ")";
                 });
                 
             canvas.append("g")
                 .attr("id", "nodes")
                 .attr("transform", function(d) {
-                    return "translate(0," + (NODE_RADIUS + NODE_PADDING) + ")";
+                    return "translate(0," + (SELECTED_NODE_RADIUS + NODE_PADDING) + ")";
                 });
 
             canvas.append("svg:defs").selectAll("marker")
@@ -191,8 +192,6 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
 
                 nodeEnter.append("text")
                     .attr("class", "node-label")
-                    .attr("dx", 0)
-                    .attr("dy", NODE_RADIUS + NODE_PADDING)
                     .attr("text-anchor", "middle")
                     .attr("font-size", "12px")
                     .attr("fill", "black")
@@ -207,10 +206,22 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     });
 
                 nodeUpdate.select("circle")
-                    .attr("r", NODE_RADIUS);
+                    .attr("r", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return SELECTED_NODE_RADIUS;
+                        }
+                        return NODE_RADIUS;
+                    });
 
                 nodeUpdate.select("text")
-                    .style("fill-opacity", 1);
+                    .style("fill-opacity", 1)
+                    .attr("dx", 0)
+                    .attr("dy", function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return SELECTED_NODE_RADIUS + NODE_PADDING;
+                        }
+                        return NODE_RADIUS + NODE_PADDING;
+                    });
 
                 nodeUpdate.select("image")
                     .attr("opacity", 1);

@@ -23,8 +23,16 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
             var canvas = d3.select(element[0]).append("svg")
                 .attr("width", CANVAS_WIDTH)
                 .attr("height", CANVAS_HEIGHT)
-                .attr("id", "canvas")
-                .append("g")
+                .attr("id", "canvas");
+                
+            canvas.append("g")
+                .attr("id", "links")
+                .attr("transform", function(d) {
+                    return "translate(0," + (NODE_RADIUS + NODE_PADDING) + ")";
+                });
+                
+            canvas.append("g")
+                .attr("id", "nodes")
                 .attr("transform", function(d) {
                     return "translate(0," + (NODE_RADIUS + NODE_PADDING) + ")";
                 });
@@ -111,7 +119,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                 var links = tree.links(nodes);
                 
                 // Update links
-                var link = canvas
+                var link = canvas.select("#links")
                     .selectAll(".link")
                     .data(links, function(link) {
                         return link.target.id;
@@ -152,7 +160,7 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                     .attr("marker-end", null)
                     .remove();
 
-                var node = canvas
+                var node = canvas.select("#nodes")
                     .selectAll("g.node")
                     .data(nodes, function(data) {
                         return data.id;

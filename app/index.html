@@ -22,7 +22,7 @@
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   <div ng-controller="teamNavigatorDemoController" class="team-navigator-container" style="width: 100%; height: 100%;">
-    <team-navigator team-data="teamData" selected-team-id="1"></team-navigator>
+    <team-navigator team-data="teamData" selected-team-id="1" on-team-selected="teamSelected"></team-navigator>
   </div>
 
   <!-- In production use:

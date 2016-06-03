@@ -3,6 +3,10 @@
 var app = angular.module("teamNavigatorDemo", []);
 
 app.controller("teamNavigatorDemoController", function($scope) {
+    
+    $scope.teamSelected = function(teamId) {
+        console.log(teamId + " selected!");
+    }
 
     // Test Data
     $scope.teamData = [

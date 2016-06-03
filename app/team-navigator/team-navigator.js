@@ -3,7 +3,8 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
         restrict: "E",
         scope: {
             teamData: "=",
-            selectedTeamId: "="
+            selectedTeamId: "=",
+            onTeamSelected: "="
         },
         link: function(scope, element, attrs) {
 
@@ -226,6 +227,17 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                         return "(" + count + ")"; 
                     })
                     .style("fill-opacity", 1e-6);
+                    
+                nodeEnter.append("text")
+                    .attr("class", "select-label")
+                    .attr("text-anchor", "end")
+                    .attr("font-size", "12px")
+                    .attr("fill", "royalblue")
+                    .text("Select")
+                    .style("fill-opacity", 1e-6)
+                    .on("click", function() {
+                        scope.onTeamSelected(scope.selectedTeamId);
+                    });
 
                 // Transition entering nodes
                 var nodeUpdate = node.transition()
@@ -260,6 +272,16 @@ angular.module("teamNavigatorDemo").directive("teamNavigator", function() {
                             return SELECTED_NODE_RADIUS + (NODE_PADDING * 2);
                         }
                         return (NODE_RADIUS + NODE_PADDING * 2);
+                    });
+                    
+                nodeUpdate.select(".select-label")
+                    .style("fill-opacity", 1)
+                    .attr("dx", SELECTED_NODE_RADIUS * 2)
+                    .text(function(node) {
+                        if (node.id == scope.selectedTeamId) {
+                            return "Select";
+                        }
+                        return "";
                     });
 
                 nodeUpdate.select("image")
